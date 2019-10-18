@@ -2,8 +2,40 @@ const db = require('../database/dbConfig.js');
 const request = require('supertest');
 const server = require('../api/server.js')
 
+describe('GET /jokes', () => {
+    beforeEach(async() => {
+        await db('users')
+            .truncate();
+    })
+
+    it('should return status 201 on login', async () => {    
+        //user registers
+        const response = await request(server).post('/api/auth/register')
+        .send({ username: 'galadriel', password: 'pippin' })
+    
+        //user logs in
+        const loginResponse = await request(server).post('/api/auth/login')
+            .send({ username: 'galadriel', password: 'pippin' })
+            expect(loginResponse.status).toBe(200)
+        console.log(loginResponse.body)
+
+    })
+
+    it('should return a token', async () => {    
+        //user registers
+        const response = await request(server).post('/api/auth/register')
+        .send({ username: 'galadriel', password: 'pippin' })
+    
+        //user logs in
+        const loginResponse = await request(server).post('/api/auth/login')
+            .send({ username: 'galadriel', password: 'pippin' })
+            expect(loginResponse.body.message).toMatch('Welcome galadriel!')
+        console.log(loginResponse.body)
+
+    })
 
 
+})
 
 describe('POST /register', () => {
     beforeEach(async() => {
@@ -43,7 +75,7 @@ describe('GET /jokes', () => {
         const loginResponse = await request(server).post('/api/auth/login')
             .send({ username: 'galadriel', password: 'pippin' })
             .expect('Content-Type', /json/)
-        console.log(loginResponse.body)
+
         //server responds with jokes in json format
         const dadJokes = await request(server).get('/api/jokes')
             .auth('galadriel', 'pippin')
@@ -63,7 +95,7 @@ describe('GET /jokes', () => {
         const loginResponse = await request(server).post('/api/auth/login')
             .send({ username: 'galadriel', password: 'pippin' })
             .expect('Content-Type', /json/)
-        console.log(loginResponse.body)
+
         //server responds with dad jokes
         const dadJokes = await request(server).get('/api/jokes')
             .auth('galadriel', 'pippin')
